@@ -1,27 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAllBanners } from '@/lib/actions/banner';
-import type { Banner } from '@/lib/models/_banner_models';
+import { getAllUsers } from '@/lib/actions/user';
+import type { User } from '@/lib/models/_user_models';
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/dataTable";
 import { createColumns } from './_components/columns';
-import { FilterBanner } from './_components/filterBanner';
-import { AddBannerDialog } from './_components/addBannerDialog';
-export default function BannerPage() {
-  const [banners, setBanners] = useState<Banner[]>([]);
+import { AddUserDialog } from './_components/addUser';
+import { FilterUsers } from './_components/filterUsers';
+
+export default function UserPage() {
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
-  const fetchBanners = async (search?: string) => {
+  const fetchUsers = async (search?: string) => {
     try {
       setIsTableLoading(true);
-      const response = await getAllBanners({ search });
-      setBanners(response.data);
+      const response = await getAllUsers({ search });
+      setUsers(response.data);
       setTotal(response.total);
     } catch (error) {
-      console.error('Failed to fetch banners:', error);
+      console.error('Failed to fetch users:', error);
     } finally {
       setIsTableLoading(false);
     }
@@ -29,45 +30,45 @@ export default function BannerPage() {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchBanners(searchQuery);
+      fetchUsers(searchQuery);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
-  const columns = createColumns(fetchBanners);
+  const columns = createColumns(fetchUsers);
 
   return (
     <main className="px-2 mt-10">
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-2xl font-semibold text-[#262424]">Banners</h1>
+          <h1 className="text-2xl font-semibold text-[#262424]">Users</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage and oversee all banners in one place
+            Manage and oversee all users in one place
           </p>
         </div>
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">All Banners</span>
+            <span className="text-sm text-gray-500">All Users</span>
             <span className="text-xl font-semibold text-[#262424]">
               {total}
-            </span> 
+            </span>
           </div>
           
           <div className="flex items-center gap-4">
-            <FilterBanner 
+            <FilterUsers 
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
             />
-            <AddBannerDialog onSuccess={fetchBanners} />
+            <AddUserDialog onSuccess={() => fetchUsers(searchQuery)} />
           </div>
         </div>
 
         <Card className="border-none shadow-sm">
           <DataTable
             columns={columns}
-            data={banners}
+            data={users}
             isLoading={isTableLoading}
             total={total}
           />

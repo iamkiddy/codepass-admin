@@ -6,14 +6,32 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
 @layer base {
-    *::-webkit-scrollbar{
-        @apply bg-gray-100;
-            width: 0.25rem;
-            height: 0.25rem;
-    }
-    *::-webkit-scrollbar-thumb{
-        @apply bg-primaryColor
-    }
+  *::-webkit-scrollbar {
+    @apply bg-gray-100;
+    width: 0.25rem;
+    height: 0.25rem;
+  }
+  *::-webkit-scrollbar-thumb {
+    @apply bg-primaryColor;
+  }
+}
+
+/* Add these CKEditor specific styles */
+.ck-editor-container {
+  /* Increase the height of the editable area */
+  .ck.ck-editor__editable_inline {
+    min-height: 300px;
+    max-height: 500px;
+  }
+
+  /* Style the toolbar */
+  .ck.ck-toolbar {
+    @apply border border-gray-300 bg-white;
+  }
+
+  /* Style the editable container */
+  .ck.ck-editor__main > .ck-editor__editable {
+    @apply border border-gray-300 bg-white;
+  }
 }

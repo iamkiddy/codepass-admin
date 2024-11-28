@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss";
 
 export default {
-    darkMode: ["class"],
     content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,7 +10,6 @@ export default {
   	extend: {
 		colors: {
 			primaryColor: '#4f46e5',
-			secondaryColor: '#db2777'
 		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -20,5 +18,8 @@ export default {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require("tailwindcss-animate"),
+  ],
 } satisfies Config;
