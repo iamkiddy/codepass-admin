@@ -52,4 +52,16 @@ export default class APIUrls {
     // delete banner
     static readonly deleteBanner = `${APIUrls.BASE_URL}/api/v1/util/banner`;
 
+    // user
+    static readonly getUser = `${APIUrls.BASE_URL}/api/v1/users`;
+
+    // create user  
+    static readonly createUser = `${APIUrls.BASE_URL}/api/v1/users/create`;
+
+    // update user
+    static readonly updateUser = `${APIUrls.BASE_URL}/api/v1/users/update`;
+
+    // delete user
+    static readonly deleteUser = `${APIUrls.BASE_URL}/api/v1/users/delete`;
+
 }
