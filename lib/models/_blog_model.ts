@@ -6,6 +6,7 @@ export interface Blog {
     isActive: string;
     createdAt: string;
     updatedAt: string;
+    content: string;
 }
 
 export interface BlogResponse {
