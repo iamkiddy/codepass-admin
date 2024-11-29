@@ -40,8 +40,13 @@ export const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fullname, setFullname] = useState(user.fullname);
+<<<<<<< HEAD
   const [role, setRole] = useState(user.role);
   const [isActive, setIsActive] = useState(user.isActive);
+=======
+  const [email, setEmail] = useState(user.email);
+  const [role, setRole] = useState(user.role);
+>>>>>>> bafaa28f2954621d8a936312b9bce50b425b39eb
 
   const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -59,6 +64,22 @@ export const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
       return;
     }
 
+<<<<<<< HEAD
+=======
+    if (!email.trim()) {
+      toast.error('Email is required', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          backgroundColor: 'red',
+          color: 'white',
+          border: 'none',
+        },
+      });
+      return;
+    }
+
+>>>>>>> bafaa28f2954621d8a936312b9bce50b425b39eb
     if (!role) {
       toast.error('Role is required', {
         duration: 3000,
@@ -78,8 +99,13 @@ export const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
       await updateUser({
         id: user.id,
         fullname: fullname.trim(),
+<<<<<<< HEAD
         role,
         isActive,
+=======
+        email: email.trim(),
+        role,
+>>>>>>> bafaa28f2954621d8a936312b9bce50b425b39eb
       });
 
       toast.success('User updated successfully', {
@@ -146,6 +172,23 @@ export const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
           </div>
 
           <div className="grid gap-2">
+<<<<<<< HEAD
+=======
+            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              Email *
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="grid gap-2">
+>>>>>>> bafaa28f2954621d8a936312b9bce50b425b39eb
             <Label htmlFor="role" className="text-sm font-medium text-gray-700">
               Role *
             </Label>
@@ -163,6 +206,7 @@ export const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
               </SelectContent>
             </Select>
           </div>
+<<<<<<< HEAD
 
           <div className="grid gap-2">
             <Label htmlFor="status" className="text-sm font-medium text-gray-700">
@@ -182,6 +226,8 @@ export const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
               </SelectContent>
             </Select>
           </div>
+=======
+>>>>>>> bafaa28f2954621d8a936312b9bce50b425b39eb
         </div>
 
         <AlertDialogFooter className="gap-2">
