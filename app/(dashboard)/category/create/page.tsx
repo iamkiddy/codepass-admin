@@ -1,50 +1,42 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { updateCategory } from '@/lib/actions/categories';
+import { createCategory } from '@/lib/actions/categories';
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Category } from '@/lib/models/_category_models';
 
-interface UpdateCategoryDialogProps {
-  trigger: React.ReactNode;
-  category: Category;
-  onSuccess?: () => void;
-}
-
-export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
-  trigger,
-  category,
-  onSuccess
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
+export default function CreateCategoryPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState(category.name);
+  const [name, setName] = useState('');
   const [image, setImage] = useState<File | null>(null);
-  const [subcategory, setSubcategory] = useState(category.subcategory || '');
-  const [isFeatured, setIsFeatured] = useState(category.isFeatured);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(category.image);
+  const [subcategory, setSubcategory] = useState('');
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name.trim()) {
       toast.error('Category name is required', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          backgroundColor: 'red',
+          color: 'white',
+          border: 'none',
+        },
+      });
+      return;
+    }
+
+    if (!image) {
+      toast.error('Category image is required', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -61,23 +53,19 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
       
       const formData = new FormData();
       formData.append('name', name.trim());
+      formData.append('image', image);
       
-      if (image) {
-        formData.append('image', image);
-      }
-
       if (subcategory?.trim()) {
         formData.append('subcategory', subcategory.trim());
       }
       
       formData.append('isFeatured', String(isFeatured));
 
-      await updateCategory({
-        id: category.id,
+      await createCategory({
         formData
       });
 
-      toast.success('Category updated successfully', {
+      toast.success('Category created successfully', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -87,10 +75,10 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
         },
       });
       
-      setIsOpen(false);
-      onSuccess?.();
+      router.back();
+      router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update category', {
+      toast.error(error instanceof Error ? error.message : 'Failed to create category', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -105,33 +93,27 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
   };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger asChild>
-        {trigger}
-      </AlertDialogTrigger>
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold">Create New Category</h1>
+        <Button
+          variant="outline"
+          onClick={() => router.back()}
+          className="border-gray-300"
+        >
+          Cancel
+        </Button>
+      </div>
 
-      <AlertDialogContent className="sm:max-w-[425px] p-6 bg-white rounded-xl border shadow-lg">
-        <AlertDialogCancel className="absolute border-none right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 hover:text-secondaryColor">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </AlertDialogCancel>
-
-        <AlertDialogHeader className="space-y-3">
-          <AlertDialogTitle className="text-xl font-semibold text-[#262424]">
-            Edit Category
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-500 text-sm">
-            Update the category information below.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <div className="grid gap-4 py-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid gap-4">
           <ImageUpload
             value={image}
             previewUrl={previewUrl}
             onChange={setImage}
             onPreviewChange={setPreviewUrl}
             disabled={isLoading}
+            required
           />
 
           <div className="grid gap-2">
@@ -173,22 +155,25 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
           </div>
         </div>
 
-        <AlertDialogFooter className="gap-2">
-          <AlertDialogCancel 
-            className="border border-gray-300 hover:bg-gray-50"
+        <div className="flex justify-end gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="border-gray-300"
             disabled={isLoading}
           >
             Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={handleUpdate}
+          </Button>
+          <Button
+            type="submit"
             className="bg-primaryColor hover:bg-primaryColor/90 text-white"
             disabled={isLoading}
           >
-            {isLoading ? 'Saving...' : 'Save changes'}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            {isLoading ? 'Creating...' : 'Create Category'}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
-}; 
+} 

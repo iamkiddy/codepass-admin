@@ -1,48 +1,27 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { createCategory } from '@/lib/actions/categories';
+import { ImageUpload } from "@/components/ui/image-upload";
 
-interface AddCategoryDialogProps {
-  onSuccess?: () => void;
-}
-
-export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function CreateCategoryPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [subcategory, setSubcategory] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const resetForm = () => {
-    setName('');
-    setImage(null);
-    setSubcategory('');
-    setIsFeatured(false);
-  };
-
-  const handleCreate = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate input
     if (!name.trim()) {
       toast.error('Category name is required', {
         duration: 3000,
@@ -72,11 +51,16 @@ export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
     try {
       setIsLoading(true);
       
+      const formData = new FormData();
+      formData.append('name', name.trim());
+      formData.append('image', image);
+      if (subcategory?.trim()) {
+        formData.append('subcategory', subcategory.trim());
+      }
+      formData.append('isFeatured', String(isFeatured));
+
       await createCategory({
-        name: name.trim(),
-        image: image,
-        subcategory: subcategory.trim() || undefined,
-        isFeatured
+        formData
       });
 
       toast.success('Category created successfully', {
@@ -88,11 +72,9 @@ export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
           border: 'none',
         },
       });
-      
-      setIsOpen(false);
-      resetForm();
-      onSuccess?.();
-      
+
+      router.back();
+      router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to create category', {
         duration: 3000,
@@ -109,30 +91,29 @@ export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
   };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger asChild>
-        <Button className="bg-primaryColor hover:bg-primaryColor/90 text-white">
-          <Plus className="h-4 w-4" />
-          Add Category
+    <div className="max-w-4xl mx-auto p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold">Create New Category</h1>
+        <Button
+          variant="outline"
+          onClick={() => router.back()}
+          className="border-gray-300"
+        >
+          Cancel
         </Button>
-      </AlertDialogTrigger>
-      
-      <AlertDialogContent className="sm:max-w-[425px] p-6 bg-white rounded-xl border shadow-lg">
-        <AlertDialogCancel className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </AlertDialogCancel>
+      </div>
 
-        <AlertDialogHeader className="space-y-3">
-          <AlertDialogTitle className="text-xl font-semibold text-[#262424]">
-            Add Category
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-500 text-sm">
-            Create a new category by filling out the information below.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid gap-4">
+          <ImageUpload
+            value={image}
+            previewUrl={previewUrl}
+            onChange={setImage}
+            onPreviewChange={setPreviewUrl}
+            disabled={isLoading}
+            required
+          />
 
-        <div className="mt-6 space-y-4">
           <div className="grid gap-2">
             <Label htmlFor="name" className="text-sm font-medium text-gray-700">
               Name *
@@ -142,24 +123,7 @@ export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="image" className="text-sm font-medium text-gray-700">
-              Image *
-            </Label>
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setImage(file);
-                }
-              }}
-              className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+              disabled={isLoading}
             />
           </div>
 
@@ -172,6 +136,7 @@ export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
               value={subcategory}
               onChange={(e) => setSubcategory(e.target.value)}
               className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+              disabled={isLoading}
             />
           </div>
 
@@ -183,26 +148,30 @@ export function AddCategoryDialog({ onSuccess }: AddCategoryDialogProps) {
               id="isFeatured"
               checked={isFeatured}
               onCheckedChange={setIsFeatured}
+              disabled={isLoading}
             />
           </div>
         </div>
 
-        <AlertDialogFooter className="mt-6 gap-2">
-          <AlertDialogCancel 
-            className="border border-gray-300 hover:bg-gray-50"
+        <div className="flex justify-end gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="border-gray-300"
             disabled={isLoading}
           >
             Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={handleCreate}
+          </Button>
+          <Button
+            type="submit"
             className="bg-primaryColor hover:bg-primaryColor/90 text-white"
             disabled={isLoading}
           >
-            {isLoading ? 'Creating...' : 'Create'}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            {isLoading ? 'Creating...' : 'Create Category'}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }

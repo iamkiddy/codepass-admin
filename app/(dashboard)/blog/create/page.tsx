@@ -1,15 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { RichTextEditor } from '../../blog/_components/richTextEditor';
+import { RichTextEditor } from '../../../../components/ui/richTextEditor';
 import { createBlog } from '@/lib/actions/blogs';
+import { getAllCategories } from '@/lib/actions/categories';
+import { Category } from '@/lib/models/_category_models';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { Badge } from "@/components/ui/badge";
 
 export default function CreateBlogPage() {
   const router = useRouter();
@@ -22,16 +32,28 @@ export default function CreateBlogPage() {
   const [isActive, setIsActive] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState('');
-  const [categoryInput, setCategoryInput] = useState('');
+  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-    }
-  };
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getAllCategories();
+        setAvailableCategories(response.data);
+      } catch {
+        toast.error('Failed to fetch categories', {
+          duration: 3000,
+          position: 'top-center',
+          style: {
+            backgroundColor: 'red',
+            color: 'white',
+            border: 'none',
+          },
+        });
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && tagInput.trim()) {
@@ -40,16 +62,6 @@ export default function CreateBlogPage() {
         setTags([...tags, tagInput.trim()]);
       }
       setTagInput('');
-    }
-  };
-
-  const handleAddCategory = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && categoryInput.trim()) {
-      e.preventDefault();
-      if (!categories.includes(categoryInput.trim())) {
-        setCategories([...categories, categoryInput.trim()]);
-      }
-      setCategoryInput('');
     }
   };
 
@@ -207,36 +219,14 @@ export default function CreateBlogPage() {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="image" className="text-sm font-medium text-gray-700">
-              Image *
-            </Label>
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+            <ImageUpload
+              value={image}
+              previewUrl={previewUrl}
+              onChange={setImage}
+              onPreviewChange={setPreviewUrl}
               disabled={isLoading}
+              required
             />
-            {previewUrl && (
-              <div className="relative mt-2 h-48 w-full">
-                <img
-                  src={previewUrl}
-                  alt="Preview"
-                  className="h-full w-full object-cover rounded-md"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImage(null);
-                    setPreviewUrl(null);
-                  }}
-                  className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            )}
           </div>
 
           <div className="grid gap-2">
@@ -255,20 +245,19 @@ export default function CreateBlogPage() {
               />
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
-                  <span
+                  <Badge
                     key={tag}
-                    className="bg-gray-100 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                    className="bg-primaryColor/10 text-primaryColor hover:bg-primaryColor/20"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="hover:text-red-500"
-                      disabled={isLoading}
+                      className="ml-2 hover:text-red-500"
                     >
-                      <X className="h-3 w-3" />
+                      ×
                     </button>
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -279,31 +268,46 @@ export default function CreateBlogPage() {
               Categories *
             </Label>
             <div className="space-y-2">
-              <Input
-                id="categories"
-                value={categoryInput}
-                onChange={(e) => setCategoryInput(e.target.value)}
-                onKeyDown={handleAddCategory}
-                placeholder="Press Enter to add category"
-                className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+              <Select
+                onValueChange={(value) => {
+                  const selectedCategory = availableCategories.find(cat => cat.id === value);
+                  if (selectedCategory && !categories.includes(selectedCategory.name)) {
+                    setCategories([...categories, selectedCategory.name]);
+                  }
+                }}
                 disabled={isLoading}
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  {availableCategories.map((category) => (
+                    <SelectItem 
+                      key={category.id} 
+                      value={category.id}
+                      disabled={categories.includes(category.name)}
+                    >
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <div className="flex flex-wrap gap-2">
                 {categories.map((category) => (
-                  <span
+                  <Badge
                     key={category}
-                    className="bg-gray-100 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                    variant="outline"
+                    className="border-gray-300"
                   >
                     {category}
                     <button
                       type="button"
                       onClick={() => removeCategory(category)}
-                      className="hover:text-red-500"
-                      disabled={isLoading}
+                      className="ml-2 hover:text-red-500"
                     >
-                      <X className="h-3 w-3" />
+                      ×
                     </button>
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>

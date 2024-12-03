@@ -6,7 +6,9 @@ import type { Faq } from '@/lib/models/_faq_models';
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/dataTable";
 import { createColumns } from './_components/columns';
-import { AddFaqDialog } from './_components/addFaq';
+import Link from 'next/link';
+import { Button } from "@/components/ui/button";
+import { Plus } from 'lucide-react';
 import { FilterFaq } from './_components/filterFaq';
 
 export default function FaqPage() {
@@ -61,7 +63,12 @@ export default function FaqPage() {
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
             />
-            <AddFaqDialog onSuccess={() => fetchFaqs(searchQuery)} />
+            <Link href="/faq/add">
+              <Button className="bg-primaryColor hover:bg-primaryColor/90 text-white gap-2">
+                <Plus className="h-4 w-4" />
+                Add FAQ
+              </Button>
+            </Link>
           </div>
         </div>
 

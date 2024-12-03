@@ -12,14 +12,20 @@ export const createColumns = (fetchFaqs: () => Promise<void>): ColumnDef<Faq>[] 
     accessorKey: "question",
     header: "Question",
     cell: ({ row }) => (
-      <div className="max-w-[400px] truncate">{row.original.question}</div>
+      <div 
+        className="max-w-[400px] truncate"
+        dangerouslySetInnerHTML={{ __html: row.original.question }}
+      />
     ),
   },
   {
     accessorKey: "answer",
     header: "Answer",
     cell: ({ row }) => (
-      <div className="max-w-[400px] truncate">{row.original.answer}</div>
+      <div 
+        className="max-w-[400px] truncate"
+        dangerouslySetInnerHTML={{ __html: row.original.answer }}
+      />
     ),
   },
   {

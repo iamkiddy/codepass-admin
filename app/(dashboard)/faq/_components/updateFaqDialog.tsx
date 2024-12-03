@@ -44,7 +44,7 @@ export const UpdateFaqDialog: React.FC<UpdateFaqDialogProps> = ({
         duration: 3000,
         position: 'top-center',
         style: {
-          backgroundColor: 'red',
+          backgroundColor: 'green',
           color: 'white',
           border: 'none',
         },
@@ -67,13 +67,11 @@ export const UpdateFaqDialog: React.FC<UpdateFaqDialogProps> = ({
 
     try {
       setIsLoading(true);
-      
       await updateFaq({
         id: faq.id,
         question: question.trim(),
         answer: answer.trim()
       });
-
       toast.success('FAQ updated successfully', {
         duration: 3000,
         position: 'top-center',
@@ -85,7 +83,6 @@ export const UpdateFaqDialog: React.FC<UpdateFaqDialogProps> = ({
       });
       setIsOpen(false);
       onSuccess?.();
-      
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to update FAQ', {
         duration: 3000,
@@ -107,23 +104,22 @@ export const UpdateFaqDialog: React.FC<UpdateFaqDialogProps> = ({
         {trigger}
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="sm:max-w-[425px] p-6 bg-white rounded-xl border shadow-lg">
-        <AlertDialogCancel className="absolute border-none right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 hover:text-secondaryColor">
+      <AlertDialogContent className="w-[95vw] max-w-[500px] p-3 md:p-4 bg-white rounded-lg border shadow-lg">
+        <AlertDialogCancel className="absolute border-none right-2 top-2 rounded-sm opacity-70 transition-opacity hover:opacity-100 hover:text-secondaryColor">
           <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
         </AlertDialogCancel>
 
-        <AlertDialogHeader className="space-y-3">
-          <AlertDialogTitle className="text-xl font-semibold text-[#262424]">
+        <AlertDialogHeader className="space-y-2 mb-3">
+          <AlertDialogTitle className="text-base font-semibold text-[#262424]">
             Edit FAQ
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-500 text-sm">
+          <AlertDialogDescription className="text-gray-500 text-xs">
             Edit the FAQ by updating the information below.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="py-4 space-y-4">
-          <div className="grid gap-2">
+        <div className="space-y-3">
+          <div className="grid gap-1.5">
             <Label htmlFor="question" className="text-sm font-medium text-gray-700">
               Question
             </Label>
@@ -135,7 +131,7 @@ export const UpdateFaqDialog: React.FC<UpdateFaqDialogProps> = ({
             />
           </div>
 
-          <div className="grid gap-2">
+          <div className="grid gap-1.5">
             <Label htmlFor="answer" className="text-sm font-medium text-gray-700">
               Answer
             </Label>
@@ -148,16 +144,16 @@ export const UpdateFaqDialog: React.FC<UpdateFaqDialogProps> = ({
           </div>
         </div>
 
-        <AlertDialogFooter className="gap-2">
+        <AlertDialogFooter className="gap-2 mt-4">
           <AlertDialogCancel 
-            className="border border-gray-300 hover:bg-gray-50"
+            className="border border-gray-300 hover:bg-gray-50 text-sm py-1.5"
             disabled={isLoading}
           >
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction 
             onClick={handleUpdate}
-            className="bg-primaryColor hover:bg-primaryColor/90 text-white"
+            className="bg-primaryColor hover:bg-primaryColor/90 text-white text-sm py-1.5"
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : 'Save changes'}

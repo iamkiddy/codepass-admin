@@ -6,9 +6,10 @@ interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
+  placeholder?: string;
 }
 
-export function RichTextEditor({ value, onChange, disabled }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, disabled, placeholder }: RichTextEditorProps) {
   return (
     <div className="ck-editor-container">
       <CKEditor
@@ -33,7 +34,8 @@ export function RichTextEditor({ value, onChange, disabled }: RichTextEditorProp
             'insertTable',
             'undo',
             'redo'
-          ]
+          ],
+          placeholder: placeholder
         }}
       />
     </div>

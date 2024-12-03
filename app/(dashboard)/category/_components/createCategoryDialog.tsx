@@ -17,30 +17,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { updateCategory } from '@/lib/actions/categories';
+import { createCategory } from '@/lib/actions/categories';
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Category } from '@/lib/models/_category_models';
 
-interface UpdateCategoryDialogProps {
+interface CreateCategoryDialogProps {
   trigger: React.ReactNode;
-  category: Category;
   onSuccess?: () => void;
 }
 
-export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
+export const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({
   trigger,
-  category,
   onSuccess
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState(category.name);
+  const [name, setName] = useState('');
   const [image, setImage] = useState<File | null>(null);
-  const [subcategory, setSubcategory] = useState(category.subcategory || '');
-  const [isFeatured, setIsFeatured] = useState(category.isFeatured);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(category.image);
+  const [subcategory, setSubcategory] = useState('');
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCreate = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     
     if (!name.trim()) {
@@ -56,28 +53,34 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
       return;
     }
 
+    if (!image) {
+      toast.error('Category image is required', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          backgroundColor: 'red',
+          color: 'white',
+          border: 'none',
+        },
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
       
-      const formData = new FormData();
-      formData.append('name', name.trim());
-      
-      if (image) {
-        formData.append('image', image);
-      }
-
-      if (subcategory?.trim()) {
-        formData.append('subcategory', subcategory.trim());
-      }
-      
-      formData.append('isFeatured', String(isFeatured));
-
-      await updateCategory({
-        id: category.id,
-        formData
+      await createCategory({
+        formData: (() => {
+          const formData = new FormData();
+          formData.append('name', name.trim());
+          formData.append('image', image);
+          if (subcategory?.trim()) formData.append('subcategory', subcategory.trim());
+          formData.append('isFeatured', String(isFeatured));
+          return formData;
+        })()
       });
 
-      toast.success('Category updated successfully', {
+      toast.success('Category created successfully', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -89,8 +92,15 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
       
       setIsOpen(false);
       onSuccess?.();
+      
+      // Reset form
+      setName('');
+      setImage(null);
+      setSubcategory('');
+      setIsFeatured(false);
+      setPreviewUrl(null);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update category', {
+      toast.error(error instanceof Error ? error.message : 'Failed to create category', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -118,10 +128,10 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
 
         <AlertDialogHeader className="space-y-3">
           <AlertDialogTitle className="text-xl font-semibold text-[#262424]">
-            Edit Category
+            Create New Category
           </AlertDialogTitle>
           <AlertDialogDescription className="text-gray-500 text-sm">
-            Update the category information below.
+            Fill in the information below to create a new category.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -132,6 +142,7 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
             onChange={setImage}
             onPreviewChange={setPreviewUrl}
             disabled={isLoading}
+            required
           />
 
           <div className="grid gap-2">
@@ -181,11 +192,11 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction 
-            onClick={handleUpdate}
+            onClick={handleCreate}
             className="bg-primaryColor hover:bg-primaryColor/90 text-white"
             disabled={isLoading}
           >
-            {isLoading ? 'Saving...' : 'Save changes'}
+            {isLoading ? 'Creating...' : 'Create Category'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

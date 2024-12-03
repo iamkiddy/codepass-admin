@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { getAllCategories } from '@/lib/actions/categories';
 import type { Category } from '@/lib/models/_category_models';
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/dataTable";
-import { AddCategoryDialog } from './_components/addCategoryDialog';
 import { FilterCategory } from './_components/filterCategory';
 import { createColumns } from './_components/columns';
+import { Button } from "@/components/ui/button";
+import { Plus } from 'lucide-react';
+
 export default function CategoryPage() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
@@ -60,7 +64,13 @@ export default function CategoryPage() {
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
             />
-            <AddCategoryDialog onSuccess={fetchCategories} />
+            <Button 
+              className="bg-primaryColor hover:bg-primaryColor/90 text-white"
+              onClick={() => router.push('/category/create')}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Category
+            </Button>
           </div>
         </div>
 

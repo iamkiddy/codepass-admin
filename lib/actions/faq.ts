@@ -6,7 +6,8 @@ import {
   GetFaqsResponse, 
   UpdateFaq, 
   UpdateFaqResponse, 
-  DeleteFaqResponse 
+  DeleteFaqResponse, 
+  Faq 
 } from "../models/_faq_models";
 
 export const createFaq = async (request: CreateFaq): Promise<CreateFaqResponse> => {
@@ -71,6 +72,21 @@ export const deleteFaq = async (id: string): Promise<DeleteFaqResponse> => {
     return await apiController<DeleteFaqResponse>({
       method: 'DELETE',
       url: `${APIUrls.deleteFaq}/${id}`,
+      token: token || undefined,
+      contentType: 'application/json',
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    throw new Error(errorMessage);
+  }
+};
+
+export const getFaq = async (id: string): Promise<Faq> => {
+  try {
+    const token = localStorage.getItem('token');
+    return await apiController<Faq>({
+      method: 'GET',
+      url: `${APIUrls.getFaq}/${id}`,
       token: token || undefined,
       contentType: 'application/json',
     });

@@ -3,19 +3,64 @@
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/dataTable";
-import { createColumns } from './_components/columns';
-import { getAllBlogs } from '@/lib/actions/blogs';
+import { FilterBlog } from './_components/filterBlog';
 import { Blog } from '@/lib/models/_blog_model';
-import Link from 'next/link';
+import { getAllBlogs } from '@/lib/actions/blogs';
 import { Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { FilterBlog } from './_components/filterBlog';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ColumnDef } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
 
 export default function BlogPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
+
+  // Define columns here to avoid recreation on each render
+  const columns: ColumnDef<Blog>[] = [
+    {
+      accessorKey: "image",
+      header: "Image",
+      cell: ({ row }) => (
+        <div className="relative h-12 w-12">
+          <Image
+            src={row.original.image}
+            alt={row.original.title}
+            fill
+            className="object-cover rounded-md"
+          />
+        </div>
+      ),
+    },
+    {
+      accessorKey: "title",
+      header: "Title",
+    },
+    {
+      accessorKey: "author",
+      header: "Author",
+    },
+    {
+      accessorKey: "isActive",
+      header: "Status",
+      cell: ({ row }) => {
+        const isActive = row.original.isActive === "true";
+        return (
+          <Badge 
+            className={isActive ? 
+              "bg-green-100 text-green-800" : 
+              "bg-gray-100 text-gray-800"
+            }
+          >
+            {isActive ? "Active" : "Inactive"}
+          </Badge>
+        );
+      },
+    }
+  ];
 
   const fetchBlogs = async (search?: string) => {
     try {
@@ -38,15 +83,13 @@ export default function BlogPage() {
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
-  const columns = createColumns(fetchBlogs);
-
   return (
     <main className="px-2 mt-10">
       <div className="flex flex-col gap-6">
         <div>
           <h1 className="text-2xl font-semibold text-[#262424]">Blogs</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage and oversee all blog posts in one place
+            Manage and oversee all blogs in one place
           </p>
         </div>
 
@@ -66,7 +109,7 @@ export default function BlogPage() {
             <Link href="/blog/create">
               <Button className="bg-primaryColor hover:bg-primaryColor/90 text-white">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Blog
+                Create Blog
               </Button>
             </Link>
           </div>

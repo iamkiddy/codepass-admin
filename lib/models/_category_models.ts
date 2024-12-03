@@ -28,6 +28,9 @@ export interface GetCategoriesResponse {
 export interface UpdateCategory {
   id: string;
   name: string;
+  image?: File | string;
+  subcategory?: string;
+  isFeatured: boolean;
 }
 
 export interface UpdateCategoryResponse {
