@@ -8,11 +8,14 @@ import { DataTable } from "@/components/ui/dataTable";
 import { createColumns } from './_components/columns';
 import { FilterBanner } from './_components/filterBanner';
 import { AddBannerDialog } from './_components/addBannerDialog';
+
 export default function BannerPage() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
+
+  const columns = createColumns(() => fetchBanners(searchQuery));
 
   const fetchBanners = async (search?: string) => {
     try {
@@ -35,10 +38,8 @@ export default function BannerPage() {
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
-  const columns = createColumns(fetchBanners);
-
   return (
-    <main className="px-2 mt-10">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex flex-col gap-6">
         <div>
           <h1 className="text-2xl font-semibold text-[#262424]">Banners</h1>
@@ -60,7 +61,7 @@ export default function BannerPage() {
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
             />
-            <AddBannerDialog onSuccess={fetchBanners} />
+            <AddBannerDialog onSuccess={() => fetchBanners(searchQuery)} />
           </div>
         </div>
 
@@ -73,6 +74,6 @@ export default function BannerPage() {
           />
         </Card>
       </div>
-    </main>
+    </div>
   );
 }

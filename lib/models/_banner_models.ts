@@ -2,7 +2,9 @@ export interface Banner {
     id: string;
     image: string;
     title: string;
-    description: string;
+    event: string;
+    isFeatured: boolean;
+    isActive: boolean;
 }
 
 export interface BannerResponse {

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, Trash2 } from 'lucide-react';
 import { Banner } from '@/lib/models/_banner_models';
 import Image from 'next/image';
+import { Badge } from "@/components/ui/badge";
 import { UpdateBannerDialog } from './updateBannerDialog';
 import { DeleteBannerDialog } from './deleteBannerDialog';
 
@@ -28,10 +29,27 @@ export const createColumns = (fetchBanners: () => Promise<void>): ColumnDef<Bann
     header: "Title",
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "isFeatured",
+    header: "Featured",
     cell: ({ row }) => (
-      <div className="max-w-[400px] truncate">{row.original.description}</div>
+      <Badge 
+        variant={row.original.isFeatured ? "default" : "secondary"}
+        className="min-w-[80px] justify-center"
+      >
+        {row.original.isFeatured ? "Yes" : "No"}
+      </Badge>
+    ),
+  },
+  {
+    accessorKey: "isActive",
+    header: "Status",
+    cell: ({ row }) => (
+      <Badge 
+        variant={row.original.isActive ? "success" : "destructive"}
+        className="min-w-[80px] justify-center"
+      >
+        {row.original.isActive ? "Active" : "Inactive"}
+      </Badge>
     ),
   },
   {
