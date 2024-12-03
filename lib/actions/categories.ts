@@ -36,7 +36,7 @@ export const getAllCategories = async (params?: GetCategoriesParams): Promise<Ge
     if (params?.limit) queryParams.append('limit', params.limit.toString());
 
     const queryString = queryParams.toString();
-    const urlWithParams = `${APIUrls.getCategory}${queryString ? `?${queryString}` : ''}`;
+    const urlWithParams = `${APIUrls.getCategories}${queryString ? `?${queryString}` : ''}`;
 
     return await apiController<GetCategoriesResponse>({
       method: 'GET',

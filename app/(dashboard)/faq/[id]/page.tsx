@@ -1,18 +1,48 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { getFaq, updateFaq } from '@/lib/actions/faq';
 import { Button } from "@/components/ui/button";
+import { toast } from 'sonner';
 import { Label } from "@/components/ui/label";
-import { createFaq } from '@/lib/actions/faq';
-import { RichTextEditor } from '../../../../components/ui/richTextEditor';
+import { RichTextEditor } from '@/components/ui/richTextEditor';
 
-export default function AddFaqPage() {
+export default function EditFaqPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const params = useParams();
+  const [isLoading, setIsLoading] = useState(true);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
+
+  useEffect(() => {
+    const fetchFaq = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getFaq(params.id as string);
+        setQuestion(data.question);
+        setAnswer(data.answer);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch FAQ";
+        toast.error(errorMessage, {
+          duration: 3000,
+          position: 'top-center',
+          style: {
+            backgroundColor: 'red',
+            color: 'white',
+            border: 'none',
+          },
+        });
+        router.push('/faq');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchFaq();
+    }
+  }, [params.id, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,13 +75,13 @@ export default function AddFaqPage() {
 
     try {
       setIsLoading(true);
-      
-      await createFaq({
+      await updateFaq({
+        id: params.id as string,
         question: question.trim(),
         answer: answer.trim()
       });
 
-      toast.success('FAQ created successfully', {
+      toast.success('FAQ updated successfully', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -60,11 +90,10 @@ export default function AddFaqPage() {
           border: 'none',
         },
       });
-
-      router.back();
-      router.refresh();
+      router.push('/faq');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create FAQ', {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update FAQ";
+      toast.error(errorMessage, {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -81,7 +110,7 @@ export default function AddFaqPage() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Create New FAQ</h1>
+        <h1 className="text-2xl font-semibold">Edit FAQ</h1>
         <Button
           variant="outline"
           onClick={() => router.back()}
@@ -104,6 +133,7 @@ export default function AddFaqPage() {
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Enter your question here..."
               className="w-full px-3 py-2 border rounded-md"
+              disabled={isLoading}
             />
           </div>
 
@@ -115,6 +145,7 @@ export default function AddFaqPage() {
               value={answer}
               onChange={setAnswer}
               placeholder="Enter your answer here..."
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -134,10 +165,10 @@ export default function AddFaqPage() {
             className="bg-primaryColor hover:bg-primaryColor/90 text-white"
             disabled={isLoading}
           >
-            {isLoading ? 'Creating...' : 'Create FAQ'}
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>
         </div>
       </form>
     </div>
   );
-} 
+}

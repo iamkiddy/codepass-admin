@@ -195,6 +195,17 @@ export default function CreateBlogPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid gap-4">
           <div className="grid gap-2">
+            <ImageUpload
+              value={image}
+              previewUrl={previewUrl}
+              onChange={setImage}
+              onPreviewChange={setPreviewUrl}
+              disabled={isLoading}
+              required
+            />
+          </div>
+
+          <div className="grid gap-2">
             <Label htmlFor="title" className="text-sm font-medium text-gray-700">
               Title *
             </Label>
@@ -215,17 +226,6 @@ export default function CreateBlogPage() {
               value={content}
               onChange={setContent}
               disabled={isLoading}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <ImageUpload
-              value={image}
-              previewUrl={previewUrl}
-              onChange={setImage}
-              onPreviewChange={setPreviewUrl}
-              disabled={isLoading}
-              required
             />
           </div>
 

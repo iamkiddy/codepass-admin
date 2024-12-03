@@ -17,7 +17,10 @@ export default class APIUrls {
     static readonly deleteEventType = `${APIUrls.BASE_URL}/api/v1/util/event-type`;
 
     // category
-    static readonly getCategory = `${APIUrls.BASE_URL}/api/v1/util/categories`;
+    static readonly getCategories = `${APIUrls.BASE_URL}/api/v1/util/categories`;
+
+    // get category by id
+    static readonly getCategory = `${APIUrls.BASE_URL}/api/v1/util/category`;
 
     // create category
     static readonly createCategory = `${APIUrls.BASE_URL}/api/v1/util/category`;
@@ -31,6 +34,9 @@ export default class APIUrls {
     // faq
     static readonly getFaq = `${APIUrls.BASE_URL}/api/v1/util/faqs`;
 
+    // get faq by id
+    static readonly getFaqById = `${APIUrls.BASE_URL}/api/v1/util/faq`;
+
     // create faq
     static readonly createFaq = `${APIUrls.BASE_URL}/api/v1/util/faq`;
 
@@ -42,6 +48,9 @@ export default class APIUrls {
 
     // banner
     static readonly getBanner = `${APIUrls.BASE_URL}/api/v1/util/banners`;
+
+    // get banner by id
+    static readonly getBannerById = `${APIUrls.BASE_URL}/api/v1/util/banner`;
 
     // create banner
     static readonly createBanner = `${APIUrls.BASE_URL}/api/v1/util/banner`;    

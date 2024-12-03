@@ -86,7 +86,7 @@ export const getFaq = async (id: string): Promise<Faq> => {
     const token = localStorage.getItem('token');
     return await apiController<Faq>({
       method: 'GET',
-      url: `${APIUrls.getFaq}/${id}`,
+      url: `${APIUrls.getFaqById}/${id}`,
       token: token || undefined,
       contentType: 'application/json',
     });

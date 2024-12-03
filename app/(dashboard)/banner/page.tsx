@@ -7,9 +7,12 @@ import { Card } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/dataTable";
 import { createColumns } from './_components/columns';
 import { FilterBanner } from './_components/filterBanner';
-import { AddBannerDialog } from './_components/addBannerDialog';
+import { Button } from "@/components/ui/button";
+import { Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function BannerPage() {
+  const router = useRouter();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
@@ -61,7 +64,13 @@ export default function BannerPage() {
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
             />
-            <AddBannerDialog onSuccess={() => fetchBanners(searchQuery)} />
+            <Button 
+              onClick={() => router.push('/banner/create')}
+              className="bg-primaryColor hover:bg-primaryColor/90 text-white gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Banner
+            </Button>
           </div>
         </div>
 

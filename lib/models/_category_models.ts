@@ -13,9 +13,10 @@ export interface Category {
   id: string;
   image: string;
   name: string;
-  subcategory?: string;
+  subcategory?: string[];
   isFeatured: boolean;
-  numberOfEvents: number;
+  totalEvents: number;
+  totalBlogs: number;
 }
 
 export interface GetCategoriesResponse {

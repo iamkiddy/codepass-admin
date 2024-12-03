@@ -111,3 +111,19 @@ export const deleteBanner = async (id: string): Promise<DeleteBannerResponse> =>
     throw new Error(errorMessage);
   }
 };
+
+
+export const getBannerById = async (id: string): Promise<BannerResponse> => {
+  try {
+    const token = localStorage.getItem('token');
+    return await apiController<BannerResponse>({
+      method: 'GET',
+      url: `${APIUrls.getBannerById}/${id}`,
+      token: token || undefined,
+      contentType: 'application/json',
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    throw new Error(errorMessage);
+  }
+};

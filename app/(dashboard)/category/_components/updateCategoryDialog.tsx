@@ -66,10 +66,7 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
         formData.append('image', image);
       }
 
-      if (subcategory?.trim()) {
-        formData.append('subcategory', subcategory.trim());
-      }
-      
+    
       formData.append('isFeatured', String(isFeatured));
 
       await updateCategory({
