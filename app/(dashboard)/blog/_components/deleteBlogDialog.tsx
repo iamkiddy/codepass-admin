@@ -66,7 +66,7 @@ export const DeleteBlogDialog: React.FC<DeleteBlogDialogProps> = ({
       <AlertDialogTrigger asChild>
         {trigger}
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-white">
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>

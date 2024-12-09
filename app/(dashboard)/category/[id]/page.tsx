@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { ImageUpload } from '@/components/ui/image-upload';
 import { Badge } from "@/components/ui/badge";
 
 export default function EditCategoryPage() {
@@ -16,10 +15,9 @@ export default function EditCategoryPage() {
   const params = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState('');
+  const [icon, setIcon] = useState('');
   const [subcategories, setSubcategories] = useState<string[]>([]);
   const [isFeatured, setIsFeatured] = useState(false);
-  const [image, setImage] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>('');
   const [subcategoryInput, setSubcategoryInput] = useState('');
 
   useEffect(() => {
@@ -28,12 +26,11 @@ export default function EditCategoryPage() {
         setIsLoading(true);
         const data = await getCategory(params.id as string);
         setName(data.name);
+        setIcon(data.icon);
         setSubcategories(data.subcategory || []);
         setIsFeatured(data.isFeatured);
-        setPreviewUrl(data.image);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to fetch category";
-        toast.error(errorMessage, {
+        toast.error(error instanceof Error ? error.message : "Failed to fetch category", {
           duration: 3000,
           position: 'top-center',
           style: {
@@ -69,19 +66,42 @@ export default function EditCategoryPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!name.trim()) {
+      toast.error('Category name is required', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          backgroundColor: 'red',
+          color: 'white',
+          border: 'none',
+        },
+      });
+      return;
+    }
+
+    if (!icon.trim()) {
+      toast.error('Icon name is required', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          backgroundColor: 'red',
+          color: 'white',
+          border: 'none',
+        },
+      });
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const formData = new FormData();
-      formData.append('name', name);
-      if (subcategories.length > 0) {
-        formData.append('subcategory', subcategories.join(','));
-      }
-      formData.append('isFeatured', isFeatured.toString());
-      if (image) formData.append('image', image);
-
-      await updateCategory({ 
-        id: params.id as string, 
-        formData 
+      
+      await updateCategory({
+        id: params.id as string,
+        name: name.trim(),
+        icon: icon.trim(),
+        subcategory: subcategories.join(','),
+        isFeatured
       });
 
       toast.success('Category updated successfully', {
@@ -95,8 +115,7 @@ export default function EditCategoryPage() {
       });
       router.push('/category');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to update category";
-      toast.error(errorMessage, {
+      toast.error(error instanceof Error ? error.message : 'Failed to update category', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -108,10 +127,6 @@ export default function EditCategoryPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handlePreviewChange = (url: string | null) => {
-    setPreviewUrl(url || '');
   };
 
   return (
@@ -129,13 +144,20 @@ export default function EditCategoryPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid gap-4">
-          <ImageUpload
-            value={image}
-            previewUrl={previewUrl || ''}
-            onChange={setImage}
-            onPreviewChange={handlePreviewChange}
-            disabled={isLoading}
-          />
+          <div className="grid gap-2">
+            <Label htmlFor="icon" className="text-sm font-medium text-gray-700">
+              Icon * (Lucide icon name)
+            </Label>
+            <Input
+              id="icon"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              placeholder="e.g. home, user, settings"
+              className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+              disabled={isLoading}
+              required
+            />
+          </div>
 
           <div className="grid gap-2">
             <Label htmlFor="name" className="text-sm font-medium text-gray-700">

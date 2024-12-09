@@ -7,6 +7,8 @@ export interface Blog {
     createdAt: string;
     updatedAt: string;
     content: string;
+    tags: string[];
+    categories: string[];
 }
 
 export interface BlogResponse {
@@ -23,6 +25,7 @@ export interface CreateBlog {
     tags: string[];
     categories: string[];
     isActive: string;
+
 }
 
 export interface CreateBlogResponse {

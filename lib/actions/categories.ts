@@ -1,24 +1,27 @@
 import apiController from "../apiController";
 import APIUrls from "../apiurls";
 import { 
+  CreateCategory,
   CreateCategoryResponse, 
   GetCategoriesResponse, 
   DeleteCategoryResponse, 
   DeleteCategory, 
   GetCategoriesParams, 
-  Category 
+  Category,
+  UpdateCategory,
+  UpdateCategoryResponse
 } from "../models/_category_models";
 
-export const createCategory = async ({ formData }: { formData: FormData }): Promise<CreateCategoryResponse> => {
+export const createCategory = async (data: CreateCategory): Promise<CreateCategoryResponse> => {
   try {
     const token = localStorage.getItem('token');
     
     return await apiController<CreateCategoryResponse>({
       method: 'POST',
       url: APIUrls.createCategory,
-      data: formData,
+      data,
       token: token || undefined,
-      contentType: 'multipart/form-data',
+      contentType: 'application/json',
     });
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
@@ -50,16 +53,16 @@ export const getAllCategories = async (params?: GetCategoriesParams): Promise<Ge
   }
 };
 
-export const updateCategory = async ({ id, formData }: { id: string, formData: FormData }) => {
+export const updateCategory = async (data: UpdateCategory): Promise<UpdateCategoryResponse> => {
   try {
     const token = localStorage.getItem('token');
     
-    return await apiController({
+    return await apiController<UpdateCategoryResponse>({
       method: 'PUT',
-      url: `${APIUrls.updateCategory}/${id}`,
-      data: formData,
+      url: `${APIUrls.updateCategory}/${data.id}`,
+      data,
       token: token || undefined,
-      contentType: 'multipart/form-data',
+      contentType: 'application/json',
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";

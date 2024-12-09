@@ -4,25 +4,30 @@ import { ColumnDef, Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { DeleteCategoryDialog } from './deleteCategoryDialog';
 import { Category } from '@/lib/models/_category_models';
-import { Icon, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
+import * as LucideIcons from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 type CategoryRow = Row<Category>;
 
 export const createColumns = (fetchCategories: () => Promise<void>): ColumnDef<Category>[] => {
   const ImageCell = ({ row }: { row: CategoryRow }) => {
     const router = useRouter();
+    const IconComponent = LucideIcons[row.original.icon as keyof typeof LucideIcons] as LucideIcon;
+    
     return (
       <div
         onClick={() => router.push(`/category/${row.original.id}`)}
         className="cursor-pointer"
       >
-        <div className="p-5 rounded-md bg-fuchsia-500">
-          <Icon
-            className="w-6 h-6"
-            name={row.original.icon}
-            color="white" iconNode={[]}
-          />
+        <div className="w-12 h-12 flex items-center justify-center rounded-md bg-fuchsia-500">
+          {IconComponent && (
+            <IconComponent
+              className="w-6 h-6"
+              color="white"
+            />
+          )}
         </div>
       </div>
     );
@@ -78,8 +83,8 @@ export const createColumns = (fetchCategories: () => Promise<void>): ColumnDef<C
 
   return [
     {
-      accessorKey: "image",
-      header: "Image",
+      accessorKey: "icon",
+      header: "Icon",
       cell: ({ row }) => <ImageCell row={row} />,
     },
     {

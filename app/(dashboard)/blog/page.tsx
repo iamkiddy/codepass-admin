@@ -9,58 +9,13 @@ import { getAllBlogs } from '@/lib/actions/blogs';
 import { Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Link from 'next/link';
-import Image from 'next/image';
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
+import { createColumns } from './_components/columns';
 
 export default function BlogPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
-
-  // Define columns here to avoid recreation on each render
-  const columns: ColumnDef<Blog>[] = [
-    {
-      accessorKey: "image",
-      header: "Image",
-      cell: ({ row }) => (
-        <div className="relative h-12 w-12">
-          <Image
-            src={row.original.image}
-            alt={row.original.title}
-            fill
-            className="object-cover rounded-md"
-          />
-        </div>
-      ),
-    },
-    {
-      accessorKey: "title",
-      header: "Title",
-    },
-    {
-      accessorKey: "author",
-      header: "Author",
-    },
-    {
-      accessorKey: "isActive",
-      header: "Status",
-      cell: ({ row }) => {
-        const isActive = row.original.isActive === "true";
-        return (
-          <Badge 
-            className={isActive ? 
-              "bg-green-100 text-green-800" : 
-              "bg-gray-100 text-gray-800"
-            }
-          >
-            {isActive ? "Active" : "Inactive"}
-          </Badge>
-        );
-      },
-    }
-  ];
 
   const fetchBlogs = async (search?: string) => {
     try {
@@ -75,6 +30,8 @@ export default function BlogPage() {
     }
   };
 
+  
+
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       fetchBlogs(searchQuery);
@@ -82,6 +39,8 @@ export default function BlogPage() {
 
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
+
+  const columns = createColumns(fetchBlogs);
 
   return (
     <main className="px-2 mt-10">

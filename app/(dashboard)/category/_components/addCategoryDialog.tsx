@@ -8,16 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { createCategory } from '@/lib/actions/categories';
-import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function CreateCategoryPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState('');
-  const [image, setImage] = useState<File | null>(null);
+  const [icon, setIcon] = useState('');
   const [subcategory, setSubcategory] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,8 +33,8 @@ export default function CreateCategoryPage() {
       return;
     }
 
-    if (!image) {
-      toast.error('Category image is required', {
+    if (!icon.trim()) {
+      toast.error('Icon name is required', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -53,14 +51,17 @@ export default function CreateCategoryPage() {
       
       const formData = new FormData();
       formData.append('name', name.trim());
-      formData.append('image', image);
+      formData.append('icon', icon.trim());
       if (subcategory?.trim()) {
         formData.append('subcategory', subcategory.trim());
       }
       formData.append('isFeatured', String(isFeatured));
 
       await createCategory({
-        formData
+          name: name.trim(),
+          icon: icon.trim(),
+          subcategory: subcategory.trim() || undefined,
+          isFeatured
       });
 
       toast.success('Category created successfully', {
@@ -104,15 +105,21 @@ export default function CreateCategoryPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid gap-4">
-          <ImageUpload
-            value={image}
-            previewUrl={previewUrl}
-            onChange={setImage}
-            onPreviewChange={setPreviewUrl}
-            disabled={isLoading}
-            required
-          />
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="icon" className="text-sm font-medium text-gray-700">
+              Icon * (Lucide icon name)
+            </Label>
+            <Input
+              id="icon"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              placeholder="e.g. home, user, settings"
+              className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+              disabled={isLoading}
+              required
+            />
+          </div>
 
           <div className="grid gap-2">
             <Label htmlFor="name" className="text-sm font-medium text-gray-700">

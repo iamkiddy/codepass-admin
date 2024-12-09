@@ -32,6 +32,7 @@ export const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState('');
+  const [icon] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [subcategory, setSubcategory] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
@@ -70,15 +71,12 @@ export const CreateCategoryDialog: React.FC<CreateCategoryDialogProps> = ({
       setIsLoading(true);
       
       await createCategory({
-        formData: (() => {
-          const formData = new FormData();
-          formData.append('name', name.trim());
-          formData.append('image', image);
-          if (subcategory?.trim()) formData.append('subcategory', subcategory.trim());
-          formData.append('isFeatured', String(isFeatured));
-          return formData;
-        })()
+        name: name.trim(),
+        icon: icon.trim(),
+        subcategory: subcategory.trim() || undefined,
+        isFeatured
       });
+
 
       toast.success('Category created successfully', {
         duration: 3000,

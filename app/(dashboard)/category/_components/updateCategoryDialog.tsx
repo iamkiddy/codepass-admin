@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { updateCategory } from '@/lib/actions/categories';
-import { ImageUpload } from "@/components/ui/image-upload";
 import { Category } from '@/lib/models/_category_models';
 
 interface UpdateCategoryDialogProps {
@@ -35,67 +34,39 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState(category.name);
-  const [image, setImage] = useState<File | null>(null);
-  const [subcategory, setSubcategory] = useState(category.subcategory || '');
+  const [icon, setIcon] = useState(category.icon);
+  const [subcategory, setSubcategory] = useState(category.subcategory?.[0] || '');
   const [isFeatured, setIsFeatured] = useState(category.isFeatured);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(category.image);
 
   const handleUpdate = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     
     if (!name.trim()) {
-      toast.error('Category name is required', {
-        duration: 3000,
-        position: 'top-center',
-        style: {
-          backgroundColor: 'red',
-          color: 'white',
-          border: 'none',
-        },
-      });
+      toast.error('Category name is required');
+      return;
+    }
+
+    if (!icon.trim()) {
+      toast.error('Icon name is required');
       return;
     }
 
     try {
       setIsLoading(true);
       
-      const formData = new FormData();
-      formData.append('name', name.trim());
-      
-      if (image) {
-        formData.append('image', image);
-      }
-
-    
-      formData.append('isFeatured', String(isFeatured));
-
       await updateCategory({
         id: category.id,
-        formData
+        name: name.trim(),
+        icon: icon.trim(),
+        subcategory: subcategory.trim() || undefined,
+        isFeatured
       });
 
-      toast.success('Category updated successfully', {
-        duration: 3000,
-        position: 'top-center',
-        style: {
-          backgroundColor: 'green',
-          color: 'white',
-          border: 'none',
-        },
-      });
-      
+      toast.success('Category updated successfully');
       setIsOpen(false);
       onSuccess?.();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update category', {
-        duration: 3000,
-        position: 'top-center',
-        style: {
-          backgroundColor: 'red',
-          color: 'white',
-          border: 'none',
-        },
-      });
+      toast.error(error instanceof Error ? error.message : 'Failed to update category');
     } finally {
       setIsLoading(false);
     }
@@ -123,13 +94,20 @@ export const UpdateCategoryDialog: React.FC<UpdateCategoryDialogProps> = ({
         </AlertDialogHeader>
 
         <div className="grid gap-4 py-4">
-          <ImageUpload
-            value={image}
-            previewUrl={previewUrl}
-            onChange={setImage}
-            onPreviewChange={setPreviewUrl}
-            disabled={isLoading}
-          />
+          <div className="grid gap-2">
+            <Label htmlFor="icon" className="text-sm font-medium text-gray-700">
+              Icon * (Lucide icon name)
+            </Label>
+            <Input
+              id="icon"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              placeholder="e.g. home, user, settings"
+              className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
+              disabled={isLoading}
+              required
+            />
+          </div>
 
           <div className="grid gap-2">
             <Label htmlFor="name" className="text-sm font-medium text-gray-700">

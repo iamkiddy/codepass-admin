@@ -10,6 +10,8 @@ export default {
   	extend: {
 		colors: {
 			primaryColor: '#4f46e5',
+      secondaryColor: '#db2777'
+
 		},
   		borderRadius: {
   			lg: 'var(--radius)',

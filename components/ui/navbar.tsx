@@ -3,11 +3,16 @@
 import { Bell, Search, Settings } from 'lucide-react';
 import { useAuth } from '@/lib/context/AuthProvider';
 import { Input } from '@/components/ui/input';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const { user } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSettingsClick = () => {
+    router.push('/settings');
+  };
 
   const getCurrentSection = () => {
     const path = pathname.split('/')[1];
@@ -28,6 +33,8 @@ export default function Navbar() {
         return 'Users';
       case 'event-type':
         return 'Event Types';
+      case 'settings':
+        return 'Settings';
       default:
         return 'Dashboard';
     }
@@ -62,8 +69,14 @@ export default function Navbar() {
               <Bell className="h-5 w-5 text-gray-500" />
               <span className="absolute top-1 right-1 h-2 w-2 bg-secondaryColor rounded-full"></span>
             </button>
-            <button className="rounded-full p-2 hover:bg-gray-100 transition-colors">
-              <Settings className="h-5 w-5 text-gray-500" />
+            <button 
+              type="button"
+              onClick={handleSettingsClick}
+              className={`rounded-full p-2 hover:bg-gray-100 transition-colors ${
+                pathname.startsWith('/settings') ? 'text-primaryColor bg-primaryColor/10' : 'text-gray-500'
+              }`}
+            >
+              <Settings className="h-5 w-5" />
             </button>
           </div>
           

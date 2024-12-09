@@ -43,9 +43,13 @@ export const createBlog = async (request: CreateBlog): Promise<CreateBlogRespons
     formData.append('image', request.image);
     formData.append('isActive', request.isActive);
     
-    // Append arrays as JSON strings
+    // Send each category ID individually
+    request.categories.forEach(categoryId => {
+      formData.append('categories', categoryId);
+    });
+    
+    // Send tags as a JSON string
     formData.append('tags', JSON.stringify(request.tags));
-    formData.append('categories', JSON.stringify(request.categories));
 
     return await apiController<CreateBlogResponse>({
       method: 'POST',
@@ -106,3 +110,18 @@ export const deleteBlog = async (id: string): Promise<DeleteBlogResponse> => {
     throw new Error(errorMessage);
   }
 }; 
+
+export const getBlogById = async (id: string): Promise<BlogResponse> => {
+  try {
+    const token = localStorage.getItem('token');
+    return await apiController<BlogResponse>({  
+      method: 'GET',
+      url: `${APIUrls.getBlogById}/${id}`,
+      token: token || undefined,
+      contentType: 'application/json',
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    throw new Error(errorMessage);
+  }
+};

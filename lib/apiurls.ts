@@ -76,6 +76,9 @@ export default class APIUrls {
     // blogs
     static readonly getBlogs = `${APIUrls.BASE_URL}/api/v1/blog`;
 
+    // get blog by id
+    static readonly getBlogById = `${APIUrls.BASE_URL}/api/v1/blog`;
+
     // create blog
     static readonly createBlog = `${APIUrls.BASE_URL}/api/v1/blog/create`;
 

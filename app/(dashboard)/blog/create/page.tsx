@@ -69,8 +69,8 @@ export default function CreateBlogPage() {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const removeCategory = (categoryToRemove: string) => {
-    setCategories(categories.filter(category => category !== categoryToRemove));
+  const removeCategory = (categoryIdToRemove: string) => {
+    setCategories(categories.filter(categoryId => categoryId !== categoryIdToRemove));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -270,9 +270,8 @@ export default function CreateBlogPage() {
             <div className="space-y-2">
               <Select
                 onValueChange={(value) => {
-                  const selectedCategory = availableCategories.find(cat => cat.id === value);
-                  if (selectedCategory && !categories.includes(selectedCategory.name)) {
-                    setCategories([...categories, selectedCategory.name]);
+                  if (!categories.includes(value)) {
+                    setCategories([...categories, value]);
                   }
                 }}
                 disabled={isLoading}
@@ -285,7 +284,7 @@ export default function CreateBlogPage() {
                     <SelectItem 
                       key={category.id} 
                       value={category.id}
-                      disabled={categories.includes(category.name)}
+                      disabled={categories.includes(category.id)}
                     >
                       {category.name}
                     </SelectItem>
@@ -293,22 +292,25 @@ export default function CreateBlogPage() {
                 </SelectContent>
               </Select>
               <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <Badge
-                    key={category}
-                    variant="outline"
-                    className="border-gray-300"
-                  >
-                    {category}
-                    <button
-                      type="button"
-                      onClick={() => removeCategory(category)}
-                      className="ml-2 hover:text-red-500"
+                {categories.map((categoryId) => {
+                  const category = availableCategories.find(cat => cat.id === categoryId);
+                  return (
+                    <Badge
+                      key={categoryId}
+                      variant="outline"
+                      className="border-gray-300"
                     >
-                      ×
-                    </button>
-                  </Badge>
-                ))}
+                      {category?.name}
+                      <button
+                        type="button"
+                        onClick={() => removeCategory(categoryId)}
+                        className="ml-2 hover:text-red-500"
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  );
+                })}
               </div>
             </div>
           </div>
