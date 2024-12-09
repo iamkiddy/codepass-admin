@@ -4,9 +4,8 @@ import { ColumnDef, Row } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { DeleteCategoryDialog } from './deleteCategoryDialog';
 import { Category } from '@/lib/models/_category_models';
-import { Trash2 } from "lucide-react";
+import { Icon, Trash2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 type CategoryRow = Row<Category>;
 
@@ -18,12 +17,11 @@ export const createColumns = (fetchCategories: () => Promise<void>): ColumnDef<C
         onClick={() => router.push(`/category/${row.original.id}`)}
         className="cursor-pointer"
       >
-        <div className="relative h-12 w-12">
-          <Image
-            src={row.original.image}
-            alt={row.original.name}
-            fill
-            className="object-cover rounded-md"
+        <div className="p-5 rounded-md bg-fuchsia-500">
+          <Icon
+            className="w-6 h-6"
+            name={row.original.icon}
+            color="white" iconNode={[]}
           />
         </div>
       </div>

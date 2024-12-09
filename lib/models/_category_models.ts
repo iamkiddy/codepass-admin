@@ -1,6 +1,6 @@
 export interface CreateCategory {
   name: string;
-  image: File | string;
+  icon: string;
   subcategory?: string;
   isFeatured: boolean;
 }
@@ -11,7 +11,7 @@ export interface CreateCategoryResponse {
 
 export interface Category {
   id: string;
-  image: string;
+  icon: string;
   name: string;
   subcategory?: string[];
   isFeatured: boolean;
@@ -29,7 +29,7 @@ export interface GetCategoriesResponse {
 export interface UpdateCategory {
   id: string;
   name: string;
-  image?: File | string;
+  icon?: string;
   subcategory?: string;
   isFeatured: boolean;
 }
