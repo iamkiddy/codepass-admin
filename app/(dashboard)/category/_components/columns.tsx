@@ -14,7 +14,8 @@ type CategoryRow = Row<Category>;
 export const createColumns = (fetchCategories: () => Promise<void>): ColumnDef<Category>[] => {
   const ImageCell = ({ row }: { row: CategoryRow }) => {
     const router = useRouter();
-    const IconComponent = LucideIcons[row.original.icon as keyof typeof LucideIcons] as LucideIcon;
+    const capitalizedIcon = row.original.icon.charAt(0).toUpperCase() + row.original.icon.slice(1);
+    const IconComponent = LucideIcons[capitalizedIcon as keyof typeof LucideIcons] as LucideIcon;
     
     return (
       <div
