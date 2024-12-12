@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
@@ -9,15 +9,44 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { createBanner } from '@/lib/actions/banner';
+import { getEventUtils } from '@/lib/actions/event';
+import { EventOption } from '@/lib/models/_event_models';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function CreateBannerPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [image, setImage] = useState<File | null>(null);
+  const [eventId, setEventId] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [events, setEvents] = useState<EventOption[]>([]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await getEventUtils();
+        if (response?.data) {
+          setEvents(response.data);
+        } else {
+          toast.error('Invalid events data received');
+        }
+      } catch (error) {
+        toast.error('Failed to fetch events');
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,12 +61,18 @@ export default function CreateBannerPage() {
       return;
     }
 
+    if (!eventId) {
+      toast.error('Event is required');
+      return;
+    }
+
     try {
       setIsLoading(true);
       
       await createBanner({
         title: title.trim(),
         image,
+        eventId,
         isFeatured,
         isActive
       });
@@ -90,6 +125,28 @@ export default function CreateBannerPage() {
               className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20"
               disabled={isLoading}
             />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="event" className="text-sm font-medium text-gray-700">
+              Event *
+            </Label>
+            <Select
+              value={eventId}
+              onValueChange={setEventId}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select an event" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                {events?.map((event) => (
+                  <SelectItem key={event.id} value={event.id}>
+                    {event.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center justify-between">

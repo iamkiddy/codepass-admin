@@ -12,19 +12,15 @@ import {
 export const createBanner = async (request: CreateBanner): Promise<CreateBannerResponse> => {
   try {
     const token = localStorage.getItem('token');
-    
-    // Create FormData object for file upload
     const formData = new FormData();
     
-    // Append each field to FormData
     formData.append('title', request.title);
+    formData.append('eventId', request.eventId);
     
-    // Handle image file
     if (request.image instanceof File) {
       formData.append('image', request.image);
     }
     
-    // Convert boolean to string
     formData.append('isFeatured', request.isFeatured ? 'true' : 'false');
     formData.append('isActive', request.isActive ? 'true' : 'false');
 

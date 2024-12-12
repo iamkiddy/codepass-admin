@@ -42,4 +42,3 @@ export interface GetEventTypesParams {
   limit?: number;
 }
 
-

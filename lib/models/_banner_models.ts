@@ -17,6 +17,7 @@ export interface BannerResponse {
 export interface CreateBanner {
   image: File | string;
   title: string;
+  eventId: string;
   isFeatured: boolean;
   isActive: boolean;
 }

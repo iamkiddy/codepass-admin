@@ -88,4 +88,6 @@ export default class APIUrls {
     // delete blog
     static readonly deleteBlog = `${APIUrls.BASE_URL}/api/v1/blog`;
 
+    // get event utils
+    static readonly getEventUtils = `${APIUrls.BASE_URL}/api/v1/util/events`;
 }
