@@ -6,7 +6,8 @@ import {
   BannerResponse, 
   UpdateBanner, 
   UpdateBannerResponse, 
-  DeleteBannerResponse 
+  DeleteBannerResponse, 
+  BannerByIdResponse 
 } from "../models/_banner_models";
 
 export const createBanner = async (request: CreateBanner): Promise<CreateBannerResponse> => {
@@ -15,7 +16,7 @@ export const createBanner = async (request: CreateBanner): Promise<CreateBannerR
     const formData = new FormData();
     
     formData.append('title', request.title);
-    formData.append('eventId', request.eventId);
+    formData.append('event', request.event);
     
     if (request.image instanceof File) {
       formData.append('image', request.image);
@@ -64,19 +65,15 @@ export const getAllBanners = async (params?: { search?: string, page?: number, l
 export const updateBanner = async (id: string, request: UpdateBanner): Promise<UpdateBannerResponse> => {
   try {
     const token = localStorage.getItem('token');
-    
-    // Create FormData object for file upload
     const formData = new FormData();
     
-    // Append each field to FormData
     formData.append('title', request.title);
+    formData.append('event', request.event);
     
-    // Handle image file
     if (request.image instanceof File) {
       formData.append('image', request.image);
     }
     
-    // Convert boolean to string
     formData.append('isFeatured', request.isFeatured ? 'true' : 'false');
     formData.append('isActive', request.isActive ? 'true' : 'false');
 
@@ -109,10 +106,10 @@ export const deleteBanner = async (id: string): Promise<DeleteBannerResponse> =>
 };
 
 
-export const getBannerById = async (id: string): Promise<BannerResponse> => {
+export const getBannerById = async (id: string): Promise<BannerByIdResponse> => {
   try {
     const token = localStorage.getItem('token');
-    return await apiController<BannerResponse>({
+    return await apiController<BannerByIdResponse>({
       method: 'GET',
       url: `${APIUrls.getBannerById}/${id}`,
       token: token || undefined,

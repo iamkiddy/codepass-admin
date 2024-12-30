@@ -163,9 +163,11 @@ export function AddUserDialog({ onSuccess }: AddUserDialogProps) {
               <SelectTrigger className="border-gray-300 focus:border-primaryColor focus:ring-primaryColor/20">
                 <SelectValue placeholder="Select a role" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className='bg-white'>
                 <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="user">User</SelectItem>
+                <SelectItem value="staff">Staff</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
+                <SelectItem value="marketing">Marketing</SelectItem>
               </SelectContent>
             </Select>
           </div>

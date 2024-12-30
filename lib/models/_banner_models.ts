@@ -17,7 +17,7 @@ export interface BannerResponse {
 export interface CreateBanner {
   image: File | string;
   title: string;
-  eventId: string;
+  event: string;
   isFeatured: boolean;
   isActive: boolean;
 }
@@ -31,6 +31,8 @@ export interface UpdateBanner{
     title: string;
     isFeatured: boolean;
     isActive: boolean;
+    event: string;
+
 }
 
 export interface UpdateBannerResponse{
@@ -39,4 +41,13 @@ export interface UpdateBannerResponse{
 
 export interface DeleteBannerResponse{
   message: string;
+}
+
+export interface BannerByIdResponse {
+  id: string;
+  image: string;
+  title: string;
+  event: string;
+  isFeatured: boolean;
+  isActive: boolean;
 }

@@ -70,6 +70,7 @@ export const UpdateBannerDialog: React.FC<UpdateBannerDialogProps> = ({
       await updateBanner(banner.id, {
         title: title.trim(),
         image: image || banner.image,
+        event: banner.event,
         isFeatured,
         isActive
       });

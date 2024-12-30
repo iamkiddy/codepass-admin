@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { createBanner } from '@/lib/actions/banner';
+import { updateBanner, getBannerById } from '@/lib/actions/banner';
 import { getEventUtils } from '@/lib/actions/event';
 import { EventOption } from '@/lib/models/_event_models';
 import {
@@ -19,25 +19,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function CreateBannerPage() {
+export default function UpdateBannerPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [title, setTitle] = useState('');
   const [image, setImage] = useState<File | null>(null);
-  const [event, setevent] = useState('');
+  const [event, setEvent] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
   const [isActive, setIsActive] = useState(true);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [events, setEvents] = useState<EventOption[]>([]);
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchBannerAndEvents = async () => {
       try {
-        const response = await getEventUtils();
-        if (response?.data) {
-          setEvents(response.data);
-        } else {
-          toast.error('Invalid events data received', {
+        setIsFetching(true);
+        
+        const banner = await getBannerById(params.id);
+        
+        if (!banner) {
+          toast.error('Banner not found', {
             duration: 3000,
             position: 'top-center',
             style: {
@@ -46,9 +48,23 @@ export default function CreateBannerPage() {
               border: 'none',
             },
           });
+          router.back();
+          return;
+        }
+
+        setTitle(banner.title || '');
+        setPreviewUrl(banner.image || null);
+        setEvent(banner.event || '');
+        setIsFeatured(banner.isFeatured || false);
+        setIsActive(banner.isActive || true);
+
+        const eventsResponse = await getEventUtils();
+        if (eventsResponse?.data) {
+          setEvents(eventsResponse.data);
         }
       } catch (error) {
-        toast.error('Failed to fetch events', {
+        console.error('Error fetching banner:', error);
+        toast.error('Failed to fetch banner details', {
           duration: 3000,
           position: 'top-center',
           style: {
@@ -57,31 +73,20 @@ export default function CreateBannerPage() {
             border: 'none',
           },
         });
-        console.error('Error fetching events:', error);
+        router.back();
+      } finally {
+        setIsFetching(false);
       }
     };
 
-    fetchEvents();
-  }, []);
+    fetchBannerAndEvents();
+  }, [params.id, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title.trim()) {
       toast.error('Title is required', {
-        duration: 3000,
-        position: 'top-center',
-        style: {
-          backgroundColor: 'red',
-          color: 'white',
-          border: 'none',
-        },
-      });
-      return;
-    }
-
-    if (!image) {
-      toast.error('Image is required', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -109,15 +114,15 @@ export default function CreateBannerPage() {
     try {
       setIsLoading(true);
       
-      await createBanner({
+      await updateBanner(params.id, {
         title: title.trim(),
-        image,
+        image: image || previewUrl!,
         event,
         isFeatured,
         isActive
       });
 
-      toast.success('Banner created successfully', {
+      toast.success('Banner updated successfully', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -129,7 +134,7 @@ export default function CreateBannerPage() {
       router.back();
       router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create banner', {
+      toast.error(error instanceof Error ? error.message : 'Failed to update banner', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -143,10 +148,20 @@ export default function CreateBannerPage() {
     }
   };
 
+  if (isFetching) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primaryColor"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold">Create New Banner</h1>
+        <h1 className="text-2xl font-semibold">Edit Banner</h1>
         <Button
           variant="outline"
           onClick={() => router.back()}
@@ -165,7 +180,6 @@ export default function CreateBannerPage() {
               onChange={setImage}
               onPreviewChange={setPreviewUrl}
               disabled={isLoading}
-              required
             />
           </div>
 
@@ -189,7 +203,7 @@ export default function CreateBannerPage() {
             </Label>
             <Select
               value={event}
-              onValueChange={setevent}
+              onValueChange={setEvent}
               disabled={isLoading}
             >
               <SelectTrigger className="w-full">
@@ -245,7 +259,14 @@ export default function CreateBannerPage() {
             className="bg-primaryColor hover:bg-primaryColor/90 text-white"
             disabled={isLoading}
           >
-            {isLoading ? 'Creating...' : 'Create Banner'}
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Saving...
+              </div>
+            ) : (
+              'Save Changes'
+            )}
           </Button>
         </div>
       </form>
