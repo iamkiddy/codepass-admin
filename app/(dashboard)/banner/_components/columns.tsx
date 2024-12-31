@@ -7,11 +7,11 @@ import { Banner } from '@/lib/models/_banner_models';
 import Image from 'next/image';
 import { Badge } from "@/components/ui/badge";
 import { DeleteBannerDialog } from './deleteBannerDialog';
-import { useRouter } from 'next/navigation';
 
-export const createColumns = (fetchBanners: () => Promise<void>): ColumnDef<Banner>[] => {
-  const router = useRouter();
-  
+export const createColumns = (
+  fetchBanners: () => Promise<void>,
+  onEdit: (id: string) => void
+): ColumnDef<Banner>[] => {
   return [
     {
       accessorKey: "image",
@@ -66,7 +66,7 @@ export const createColumns = (fetchBanners: () => Promise<void>): ColumnDef<Bann
             variant="ghost"
             size="icon"
             className="hover:text-primaryColor hover:bg-primaryColor/10"
-            onClick={() => router.push(`/banner/${row.original.id}`)}
+            onClick={() => onEdit(row.original.id)}
           >
             <Edit className="h-4 w-4" />
           </Button>

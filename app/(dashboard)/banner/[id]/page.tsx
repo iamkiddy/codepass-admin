@@ -18,9 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useParams } from 'next/navigation'; // Import useParams from next/navigation
 
-export default function UpdateBannerPage({ params }: { params: { id: string } }) {
+export default function UpdateBannerPage() {
   const router = useRouter();
+  const { id } = useParams(); // Use useParams() to get the dynamic parameter 'id'
+
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [title, setTitle] = useState('');
@@ -32,12 +35,14 @@ export default function UpdateBannerPage({ params }: { params: { id: string } })
   const [events, setEvents] = useState<EventOption[]>([]);
 
   useEffect(() => {
+    if (!id) return; // Ensure 'id' is available before fetching data
+
     const fetchBannerAndEvents = async () => {
       try {
         setIsFetching(true);
-        
-        const banner = await getBannerById(params.id);
-        
+
+        const banner = await getBannerById(id as string); // Use the 'id' from useParams()
+
         if (!banner) {
           toast.error('Banner not found', {
             duration: 3000,
@@ -80,11 +85,11 @@ export default function UpdateBannerPage({ params }: { params: { id: string } })
     };
 
     fetchBannerAndEvents();
-  }, [params.id, router]);
+  }, [id, router]); // Use 'id' from useParams() as a dependency
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim()) {
       toast.error('Title is required', {
         duration: 3000,
@@ -113,13 +118,13 @@ export default function UpdateBannerPage({ params }: { params: { id: string } })
 
     try {
       setIsLoading(true);
-      
-      await updateBanner(params.id, {
+
+      await updateBanner(id as string, { // Use 'id' from useParams() for the update
         title: title.trim(),
         image: image || previewUrl!,
         event,
         isFeatured,
-        isActive
+        isActive,
       });
 
       toast.success('Banner updated successfully', {

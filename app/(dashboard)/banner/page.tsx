@@ -18,7 +18,10 @@ export default function BannerPage() {
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
-  const columns = createColumns(() => fetchBanners(searchQuery));
+  const columns = createColumns(
+    () => fetchBanners(searchQuery),
+    (id: string) => router.push(`/banner/${id}`)
+  );
 
   const fetchBanners = async (search?: string) => {
     try {
