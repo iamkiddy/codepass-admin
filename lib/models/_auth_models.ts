@@ -12,3 +12,11 @@ export interface LoginResponse {
     token: string;
 }
 
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface ForgotPasswordResponse {
+    message: string;
+}
+

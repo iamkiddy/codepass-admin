@@ -1,21 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from 'lucide-react';
-import { login } from '@/lib/actions/auth';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/context/AuthProvider';
 import { toast } from 'sonner';
+import { forgotPassword } from '@/lib/actions/auth';
 
-export default function Login() {
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { login: authLogin } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,9 +17,9 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await login({ email, password });
-      authLogin(response);
-      toast.success('Login successful!', {
+      await forgotPassword({ email });
+      
+      toast.success('Password reset instructions sent to your email!', {
         duration: 3000,
         position: 'top-center',
         style: {
@@ -36,7 +30,7 @@ export default function Login() {
       });
 
       setTimeout(() => {
-        router.push('/home');
+        router.push('/');
       }, 3000);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -66,14 +60,18 @@ export default function Login() {
         />
       </div>
 
-      {/* Right side - Login Form */}
+      {/* Right side - Forgot Password Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="max-w-md w-full space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Sign in to your account
+              Forgot your password?
             </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Enter your email address and we'll send you instructions to reset your password.
+            </p>
           </div>
+
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm space-y-4">
               <div>
@@ -89,53 +87,8 @@ export default function Login() {
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
                 />
-              </div>
-              <div className="relative">
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  required
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-500" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-gray-500" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-primaryColor focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
-              </div>
-
-              <div className="text-sm">
-                <Link href="/forgotpassword" className="font-medium text-indigo-600 hover:text-indigo-500">
-                  Forgot your password?
-                </Link>
               </div>
             </div>
 
@@ -145,7 +98,19 @@ export default function Login() {
                 className="w-full bg-primaryColor hover:bg-indigo-700 text-white"
                 disabled={isLoading}
               >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isLoading ? 'Sending...' : 'Send Reset Instructions'}
+              </Button>
+            </div>
+
+            <div className="text-center">
+              <Button
+                type="button"
+                variant="link"
+                className="text-indigo-600 hover:text-indigo-500"
+                onClick={() => router.push('/signin')}
+                disabled={isLoading}
+              >
+                Back to Sign in
               </Button>
             </div>
           </form>

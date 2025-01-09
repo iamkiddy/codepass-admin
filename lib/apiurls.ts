@@ -4,6 +4,9 @@ export default class APIUrls {
     // login 
     static readonly login = `${APIUrls.BASE_URL}/api/v1/auth/login`;
 
+    // forgot password
+    static readonly forgotPassword = `${APIUrls.BASE_URL}/api/v1/auth/forgot-password`;
+
     // event types
     static readonly getEventType = `${APIUrls.BASE_URL}/api/v1/util/event-types`;
 
