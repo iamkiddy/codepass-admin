@@ -119,7 +119,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       <div className="border rounded-[10px] border-gray-300">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
           <div className="max-h-[600px] overflow-y-auto min-w-full">
             <Table>
               <TableHeader className="bg-gray-200">
@@ -179,8 +179,8 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-4">
-        <p className="text-sm text-gray-500">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+        <p className="text-sm text-gray-500 text-center sm:text-left order-2 sm:order-1">
           Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
           {Math.min(
             (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
@@ -188,24 +188,24 @@ export function DataTable<TData, TValue>({
           )}{" "}
           of {total} entries
         </p>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 order-1 sm:order-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="rounded-full hover:bg-gray-100"
+            className="rounded-full hover:bg-gray-100 hidden sm:flex"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 overflow-x-auto">
             {getPageNumbers().map((pageNum) => (
               <Button
                 key={pageNum}
                 variant="ghost"
                 size="sm"
                 onClick={() => onPageChange(pageNum)}
-                className={`rounded-full hover:bg-gray-100 ${
+                className={`rounded-full hover:bg-gray-100 min-w-[32px] ${
                   pageNum === currentPage 
                     ? "bg-primaryColor text-white hover:bg-primaryColor/90"
                     : ""
@@ -220,7 +220,7 @@ export function DataTable<TData, TValue>({
             size="icon"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="rounded-full hover:bg-gray-100"
+            className="rounded-full hover:bg-gray-100 hidden sm:flex"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>

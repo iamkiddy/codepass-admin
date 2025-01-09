@@ -98,7 +98,7 @@ export default function EventsPage() {
 
   return (
     <main className="px-2 mt-10">
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 max-w-[1600px] mx-auto">
         <div>
           <h1 className="text-2xl font-semibold text-[#262424]">Events</h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -106,7 +106,7 @@ export default function EventsPage() {
           </p>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">All Events</span>
             <span className="text-xl font-semibold text-[#262424]">
@@ -114,7 +114,7 @@ export default function EventsPage() {
             </span>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <FilterEvents 
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -128,7 +128,7 @@ export default function EventsPage() {
           </div>
         </div>
 
-        <Card className="border-none shadow-sm">
+        <Card className="border-none shadow-sm overflow-hidden">
           <DataTable
             columns={columns}
             data={events}
