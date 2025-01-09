@@ -16,11 +16,17 @@ export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
-
-  const fetchBlogs = async (search?: string) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  
+  const fetchBlogs = async (search?: string, page: number = 1) => {
     try {
       setIsTableLoading(true);
-      const response = await getAllBlogs({ search });
+      const response = await getAllBlogs({ 
+        search, 
+        page,
+        limit: pageSize 
+      });
       setBlogs(response.data);
       setTotal(response.total);
     } catch (error) {
@@ -34,13 +40,17 @@ export default function BlogPage() {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchBlogs(searchQuery);
+      fetchBlogs(searchQuery, currentPage);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
 
   const columns = createColumns(fetchBlogs);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <main className="px-2 mt-10">
@@ -80,6 +90,9 @@ export default function BlogPage() {
             data={blogs}
             isLoading={isTableLoading}
             total={total}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
         </Card>
       </div>

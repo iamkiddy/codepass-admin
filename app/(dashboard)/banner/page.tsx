@@ -14,6 +14,8 @@ import { useRouter } from 'next/navigation';
 export default function BannerPage() {
   const router = useRouter();
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -23,10 +25,14 @@ export default function BannerPage() {
     (id: string) => router.push(`/banner/${id}`)
   );
 
-  const fetchBanners = async (search?: string) => {
+  const fetchBanners = async (search?: string, page: number = 1) => {
     try {
       setIsTableLoading(true);
-      const response = await getAllBanners({ search });
+      const response = await getAllBanners({ 
+        search, 
+        page,
+        limit: pageSize 
+      });
       setBanners(response.data);
       setTotal(response.total);
     } catch (error) {
@@ -36,13 +42,17 @@ export default function BannerPage() {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchBanners(searchQuery);
+      fetchBanners(searchQuery, currentPage);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -83,6 +93,9 @@ export default function BannerPage() {
             data={banners}
             isLoading={isTableLoading}
             total={total}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
         </Card>
       </div>

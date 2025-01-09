@@ -23,7 +23,9 @@ interface Event {
 
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
@@ -90,6 +92,10 @@ export default function EventsPage() {
 
   const columns = createColumns();
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <main className="px-2 mt-10">
       <div className="flex flex-col gap-6">
@@ -128,6 +134,9 @@ export default function EventsPage() {
             data={events}
             isLoading={isTableLoading}
             total={total}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
         </Card>
       </div>

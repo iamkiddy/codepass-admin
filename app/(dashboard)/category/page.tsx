@@ -17,11 +17,17 @@ export default function CategoryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  const fetchCategories = async (search?: string) => {
+  const fetchCategories = async (search?: string, page: number = 1) => {
     try {
       setIsTableLoading(true);
-      const response = await getAllCategories({ search });
+      const response = await getAllCategories({ 
+        search, 
+        page,
+        limit: pageSize 
+      });
       setCategories(response.data);
       setTotal(response.total);
     } catch (error) {
@@ -33,11 +39,15 @@ export default function CategoryPage() {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchCategories(searchQuery);
+      fetchCategories(searchQuery, currentPage);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const columns = createColumns(fetchCategories);
 
@@ -80,6 +90,9 @@ export default function CategoryPage() {
             data={categories}
             isLoading={isTableLoading}
             total={total}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
         </Card>
       </div>

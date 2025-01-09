@@ -14,11 +14,17 @@ export default function EventType() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  const fetchEventTypes = async (search?: string) => {
+  const fetchEventTypes = async (search?: string, page: number = 1) => {
     try {
       setIsTableLoading(true);
-      const response = await getAllEventTypes({ search });
+      const response = await getAllEventTypes({ 
+        search, 
+        page,
+        limit: pageSize 
+      });
       setEventTypes(response.data);
       setTotal(response.total);
     } catch (error) {
@@ -28,13 +34,17 @@ export default function EventType() {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchEventTypes(searchQuery);
+      fetchEventTypes(searchQuery, currentPage);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
 
   const columns = createColumns(fetchEventTypes);
 
@@ -71,6 +81,9 @@ export default function EventType() {
             data={eventTypes}
             isLoading={isTableLoading}
             total={total}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
         </Card>
       </div>

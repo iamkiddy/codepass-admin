@@ -26,13 +26,19 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   isLoading?: boolean
   total: number
+  currentPage: number
+  onPageChange: (page: number) => void
+  pageSize?: number
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   isLoading,
-  total
+  total,
+  currentPage,
+  onPageChange,
+  pageSize = 10
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -40,6 +46,30 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   })
+
+  const totalPages = Math.ceil(total / pageSize);
+  
+  // Generate page numbers array
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 3;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 2) {
+        pages.push(1, 2, 3);
+      } else if (currentPage >= totalPages - 1) {
+        pages.push(totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(currentPage - 1, currentPage, currentPage + 1);
+      }
+    }
+    
+    return pages;
+  };
 
   if (isLoading) {
     return (
@@ -162,34 +192,34 @@ export function DataTable<TData, TValue>({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 1}
             className="rounded-full hover:bg-gray-100"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="flex items-center space-x-1">
-            {[...Array(3)].map((_, i) => (
+            {getPageNumbers().map((pageNum) => (
               <Button
-                key={i}
+                key={pageNum}
                 variant="ghost"
                 size="sm"
-                onClick={() => table.setPageIndex(i)}
+                onClick={() => onPageChange(pageNum)}
                 className={`rounded-full hover:bg-gray-100 ${
-                  i === 0 
-                    ? "text-primaryColor"
+                  pageNum === currentPage 
+                    ? "bg-primaryColor text-white hover:bg-primaryColor/90"
                     : ""
                 }`}
               >
-                {i + 1}
+                {pageNum}
               </Button>
             ))}
           </div>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
             className="rounded-full hover:bg-gray-100"
           >
             <ChevronRight className="h-4 w-4" />

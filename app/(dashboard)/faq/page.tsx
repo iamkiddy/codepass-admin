@@ -14,13 +14,19 @@ import { FilterFaq } from './_components/filterFaq';
 export default function FaqPage() {
   const [faqs, setFaqs] = useState<Faq[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
-  const fetchFaqs = async (search?: string) => {
+  const fetchFaqs = async (search?: string, page: number = 1) => {
     try {
       setIsTableLoading(true);
-      const response = await getAllFaqs({ search });
+      const response = await getAllFaqs({ 
+        search, 
+        page,
+        limit: pageSize 
+      });
       setFaqs(response.data);
       setTotal(response.total);
     } catch (error) {
@@ -32,13 +38,17 @@ export default function FaqPage() {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchFaqs(searchQuery);
+      fetchFaqs(searchQuery, currentPage);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
 
   const columns = createColumns(fetchFaqs);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <main className="px-2 mt-10">
@@ -78,6 +88,9 @@ export default function FaqPage() {
             data={faqs}
             isLoading={isTableLoading}
             total={total}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
           />
         </Card>
       </div>

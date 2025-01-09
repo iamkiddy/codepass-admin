@@ -12,13 +12,19 @@ import { FilterUsers } from './_components/filterUsers';
 export default function UserPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const [isTableLoading, setIsTableLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
-  const fetchUsers = async (search?: string) => {
+  const fetchUsers = async (search?: string, page: number = 1) => {
     try {
       setIsTableLoading(true);
-      const response = await getAllUsers({ search });
+      const response = await getAllUsers({ 
+        search, 
+        page,
+        limit: pageSize 
+      });
       setUsers(response.data);
       setTotal(response.total);
     } catch (error) {
@@ -28,13 +34,17 @@ export default function UserPage() {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      fetchUsers(searchQuery);
+      fetchUsers(searchQuery, currentPage);
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchQuery]);
+  }, [searchQuery, currentPage]);
 
   const columns = createColumns(fetchUsers);
 
@@ -70,6 +80,9 @@ export default function UserPage() {
             columns={columns}
             data={users}
             isLoading={isTableLoading}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
             total={total}
           />
         </Card>
