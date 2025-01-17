@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Search, Settings, Menu } from 'lucide-react';
+import { Search, Settings, Menu } from 'lucide-react';
 import { useAuth } from '@/lib/context/AuthProvider';
 import { Input } from '@/components/ui/input';
 import { usePathname, useRouter } from 'next/navigation';

@@ -64,7 +64,8 @@ export default function ChangePasswordPage() {
       setTimeout(() => {
         router.push('/');
       }, 3000);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      console.error('Password change error:', error);
       toast.error('Failed to change password', {
         duration: 3000,
         position: 'top-center',
@@ -96,10 +97,10 @@ export default function ChangePasswordPage() {
         <div className="max-w-md w-full space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Change Password
+              Forgot your password?
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Enter your current password and choose a new one
+              Enter your email address and we&apos;ll send you instructions to reset your password.
             </p>
           </div>
 
