@@ -76,10 +76,6 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
         {/* Right - Icons and Profile */}
         <div className="flex items-center gap-3 md:gap-6">
           <div className="flex items-center gap-2 md:gap-3">
-            <button className="rounded-full p-2 hover:bg-gray-100 transition-colors relative">
-              <Bell className="h-5 w-5 text-gray-500" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-secondaryColor rounded-full"></span>
-            </button>
             <button 
               type="button"
               onClick={handleSettingsClick}
