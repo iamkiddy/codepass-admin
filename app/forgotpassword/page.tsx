@@ -12,6 +12,8 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  //
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
